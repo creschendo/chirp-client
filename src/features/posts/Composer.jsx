@@ -1,6 +1,6 @@
 // Text box for a new post, a reply (parentPostId) or a quote (quotedPostId).
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPost } from '../../api/posts.js';
 import { errorMessage } from '../../lib/format.js';
 
@@ -8,11 +8,14 @@ const MAX_LENGTH = 280;
 
 export default function Composer({ parentPostId, quotedPostId, placeholder = "What's happening?", onPosted }) {
   const [content, setContent] = useState('');
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: () => createPost({ content, parentPostId, quotedPostId }),
     onSuccess: (post) => {
       setContent('');
+      // New originals and quotes appear in feeds (replies don't, but refetching is harmless).
+      queryClient.invalidateQueries({ queryKey: ['timeline'] });
       onPosted?.(post);
     },
   });

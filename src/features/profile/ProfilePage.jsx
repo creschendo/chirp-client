@@ -1,6 +1,8 @@
 import { Link, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { getProfile } from '../../api/users.js';
+import { getProfileTimeline } from '../../api/timeline.js';
+import Feed from '../timeline/Feed.jsx';
 import { useMe } from '../auth/useMe.js';
 import { errorMessage, formatTime } from '../../lib/format.js';
 import EditProfileForm from './EditProfileForm.jsx';
@@ -33,8 +35,12 @@ export default function ProfilePage() {
 
       {isMe && <EditProfileForm me={me} />}
 
-      {/* TODO: this user's posts, once GET /users/:username/posts exists in chirp-service. */}
-      <p className="muted">Posts will appear here once the profile timeline API is built.</p>
+      <h2>Posts</h2>
+      <Feed
+        queryKey={['timeline', 'profile', user.username.toLowerCase()]}
+        fetchPage={(cursor) => getProfileTimeline(user.username, cursor)}
+        emptyText="No posts yet."
+      />
     </>
   );
 }

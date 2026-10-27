@@ -1,10 +1,11 @@
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { useMe } from '../auth/useMe.js';
+import { getHomeTimeline } from '../../api/timeline.js';
 import Composer from './Composer.jsx';
+import Feed from '../timeline/Feed.jsx';
 
 export default function HomePage() {
   const { data: me, isPending } = useMe();
-  const navigate = useNavigate();
 
   if (isPending) return <p className="muted">Loading…</p>;
 
@@ -21,9 +22,13 @@ export default function HomePage() {
 
   return (
     <>
-      <Composer onPosted={(post) => navigate(`/posts/${post.postId}`)} />
-      {/* TODO: home feed, once GET /timeline exists in chirp-service. */}
-      <p className="muted">Your home feed will appear here once the timeline API is built.</p>
+      {/* Composer refreshes the feeds itself after posting, so the new post shows up at the top. */}
+      <Composer />
+      <Feed
+        queryKey={['timeline', 'home']}
+        fetchPage={getHomeTimeline}
+        emptyText="Nothing here yet. Post something, or follow people to see their posts."
+      />
     </>
   );
 }

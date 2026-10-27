@@ -38,6 +38,7 @@ src/
     auth/             login, sign up, useMe() (the current user)
     profile/          profile page, edit form, follow buttons, follower/following lists
     posts/            home, composer, post card, post page with replies
+    timeline/         Feed: the home timeline and a profile's posts, with "load more"
   components/         shared UI (layout, "load more")
   lib/                small helpers (formatting)
 ```
@@ -56,8 +57,11 @@ src/
 Server data goes through TanStack Query: `useQuery` for single resources, `useInfiniteQuery` for paginated lists.
 The API's lists return `{ items, nextCursor }`, which maps directly onto `getNextPageParam`.
 
+Feeds are cached under `['timeline', ...]`. Anything that changes what a feed shows invalidates that prefix so
+every feed refetches: posting (Composer), deleting (PostCard), following/unfollowing (FollowButtons) and editing
+your display name (EditProfileForm).
+
 ## Not built yet
 
-- Home feed and a profile's posts: waiting on the timeline API (`GET /timeline`, `GET /users/:username/posts`)
 - Follow state on profiles: the API has no "you follow them" flag yet, so profiles show both Follow and Unfollow
 - Counts, likes, reposts, notifications, messages

@@ -14,6 +14,7 @@ export default function FollowButtons({ userId }) {
     onSuccess: (_, action) => {
       setStatus(action === 'follow' ? 'Following' : 'Not following');
       queryClient.invalidateQueries({ queryKey: ['follows'] });
+      queryClient.invalidateQueries({ queryKey: ['timeline'] }); // their posts join or leave the home feed
     },
   });
 

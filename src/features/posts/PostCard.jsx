@@ -11,8 +11,9 @@ export default function PostCard({ post, embedded = false }) {
 
   const remove = useMutation({
     mutationFn: () => deletePost(post.postId),
-    // Refetch anything that shows this post: its own page, and the replies list it sits in.
-    onSuccess: () => queryClient.invalidateQueries({ predicate: (q) => ['post', 'replies'].includes(q.queryKey[0]) }),
+    // Refetch anything that shows this post: its own page, replies lists, and feeds (which hide deleted posts).
+    onSuccess: () =>
+      queryClient.invalidateQueries({ predicate: (q) => ['post', 'replies', 'timeline'].includes(q.queryKey[0]) }),
   });
 
   if (post.deleted) {

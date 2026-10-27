@@ -15,6 +15,8 @@ export default function EditProfileForm({ me }) {
     onSuccess: (updated) => {
       queryClient.setQueryData(['me'], updated);
       queryClient.invalidateQueries({ queryKey: ['profile', updated.username.toLowerCase()] });
+      // Posts show the author's display name, so cached posts and feeds are stale too.
+      queryClient.invalidateQueries({ predicate: (q) => ['post', 'replies', 'timeline'].includes(q.queryKey[0]) });
     },
   });
 
